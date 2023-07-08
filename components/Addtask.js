@@ -2,9 +2,10 @@ import { AiOutlinePlus } from "react-icons/ai";
 import { useState } from "react";
 import classes from "./Addtask.module.css"
 
-function AddTask() {
+function AddTask(props) {
   const [modalOpen, setModalOpen] = useState(false);
   const [addTodo, setAddTodo] = useState("");
+
 
   const handleOpenModal = () => {
     setModalOpen(true);
@@ -24,6 +25,7 @@ function AddTask() {
       addTodo: addTodo,
     };
     console.log(obj);
+    props.onAddTodo(obj)
     setAddTodo("");
   };
 
