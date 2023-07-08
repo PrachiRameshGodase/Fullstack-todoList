@@ -1,0 +1,19 @@
+@keyframes pulse-color-change {
+    0% {
+      color: red;
+    }
+    30% {
+      color: rgb(221, 255, 0);
+    }
+    50% {
+      color: rgb(13, 0, 255);
+    }
+    100% {
+      color: red;
+    }
+  }
+  
+  .animate {
+    animation: pulse-color-change 3s infinite;
+  }
+  
