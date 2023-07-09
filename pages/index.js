@@ -1,8 +1,8 @@
 import Head from 'next/head'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 
-import AddTask from '@/components/Addtask' // Adjust the import path if needed
+import AddTask from '@/components/Addtask'
 import TodoList from '@/components/TodoList'
 
 import classes from '@/components/Addtask.module.css'
@@ -18,14 +18,31 @@ export default function Home() {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(enteredTodo)
-    })
-
+    });
+  
     if (response.ok) {
-      const data = await response.json()
-      const newTodo = { id: data.id, text: enteredTodo }
-      setTodos(prevTodos => [...prevTodos, newTodo])
+      const data = await response.json();
+      const newTodo = { id: data.id, text: enteredTodo };
+      setTodos(prevTodos => [...prevTodos, newTodo]);
     }
   }
+  
+  useEffect(() => {
+    fetchTodos()
+  }, [])
+
+  async function fetchTodos() {
+    try {
+      const response = await fetch('/api/addTodo') // Update the URL to '/api/addTodo' instead of '/api/fetchTodos'
+      const data = await response.json()
+      // console.log(data)
+      setTodos(data) // Update to setTodos(data || []) instead of setTodos(data.todos || [])
+        console.log("UI data",data)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+  
 
   return (
     <>
@@ -39,8 +56,12 @@ export default function Home() {
           </h1>
           <AddTask onAddTodo={addTodoHandler} />
         </div>
-        <TodoList todos={todos} />
+        <div className="flex justify-center mx-auto">
+      
+    </div>
+    
       </main>
+      <TodoList todos={todos}/>
     </>
   )
 }
