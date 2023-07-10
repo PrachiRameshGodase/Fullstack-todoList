@@ -53,7 +53,7 @@ function AddTask(props) {
     const editItem=todos.find((todo)=> todo._id === _id)
     //populating the selected expense
     if(editItem){
-      setAddTodo(editItem.todo)
+      setAddTodo(editItem.addTodo)
       console.log("Selected todo item:", editItem);
       
   }
@@ -65,10 +65,10 @@ function AddTask(props) {
       .then((response) => {
         console.log("Response",response)
         if (response.ok) {
-          console.log("Todo is deleted successfully");
+          console.log("Todo is edited successfully");
           setTodos((prevTodos) => prevTodos.filter((todo) => todo._id !== _id));
         } else {
-          throw new Error("Failed to delete todo");
+          throw new Error("Failed to Edit todo");
         }
       })
       .catch((error) => {
@@ -88,11 +88,12 @@ function AddTask(props) {
     setAddTodo(e.target.value);
   };
 
- async function formSubmitHandler (e,refresh) {
+ async function formSubmitHandler (e) {
     e.preventDefault();
     router.refresh
     const obj = {
       addTodo: addTodo,
+      isCompleted:false
     };
     console.log(obj);
     
@@ -105,8 +106,6 @@ function AddTask(props) {
     });
   
     if (response.ok) {
-      const data = await response.json();
-      const newTodo = { id: data.id, text: obj };
       setTodos(prevTodos => [...prevTodos, obj]);
     }
     setAddTodo("");
