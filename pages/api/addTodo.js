@@ -63,5 +63,41 @@ export default async function Addtodo(req,res){
             res.status(500).json({ message: "Request failed" });
           }
         }
+
+        else if (req.method === "PUT") {
+          // console.log(req)
+          try {
+            const {id} = req.body;
+            const { task} = req.body;
+            console.log("PUT", task, id);
+      
+            const client = await MongoClient.connect(
+              "mongodb+srv://iamprachigodase:prachi123@cluster0.khdv7h5.mongodb.net/todolist?retryWrites=true&w=majority"
+            );
+            const db = client.db();
+      
+            const meetupsCollection = db.collection("todolist");
+            const result = await meetupsCollection.updateOne(
+              { _id: new ObjectId(id) },
+              { $set: {todo:task.todo, isCompleted: task.isCompleted }} 
+            );
+            client.close();
+      
+            if (result.matchedCount > 0) {
+              res.status(200).json({ message: " todo updated successfully" });
+            } else {
+              res.status(404).json({ message: "todo  not found" });
+            }
+          } catch (error) {
+            console.log("Error:", error);
+            res.status(500).json({ message: "Request failed" });
+          }
+        }
+
+       
       }
+        
+      
+
+      
 

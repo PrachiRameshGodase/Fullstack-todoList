@@ -3,7 +3,8 @@ import { useState,useEffect } from "react";
 import classes from "./Addtask.module.css"
 import { useRouter } from "next/router";
 
-function AddTask(props) {
+
+function AddTask() {
   const [modalOpen, setModalOpen] = useState(false);
   const [addTodo, setAddTodo] = useState("");
   const [todos, setTodos] = useState([])
@@ -17,7 +18,9 @@ function AddTask(props) {
 
   async function fetchTodos() {
     try {
-      const response = await fetch('/api/addTodo') // Update the URL to '/api/addTodo' instead of '/api/fetchTodos'
+      const response = await fetch('/api/addTodo')
+       // Update the URL to '/api/addTodo' instead of '/api/fetchTodos'
+       console.log("response",response)
       const data = await response.json()
       // console.log(data)
       setTodos(data) // Update to setTodos(data || []) instead of setTodos(data.todos || [])
@@ -76,6 +79,46 @@ function AddTask(props) {
       });
   
   }
+
+  const handleCheckboxChange = async (id) => {
+    try {
+      const updatedData = todos.map((item) => {
+        if (item._id === id) {
+          return {
+            ...item,
+            isCompleted: !item.isCompleted,
+          };
+        }
+        return item;
+      });
+
+      // console.log("updatedData",updatedData)
+      setTodos(updatedData);
+  
+      const updatedItem = updatedData.find((item) => item._id === id);
+  
+      const response = await fetch("/api/addTodo", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: id,
+          task: updatedItem,
+        }),
+      });
+  
+      if (response.ok) {
+        console.log("Todo updated successfully:", updatedItem);
+      } else {
+        console.log("Error updating todo:", response);
+      }
+    } catch (error) {
+      console.log("Error:", error.message);
+    }
+  };
+  
+  
   const handleOpenModal = () => {
     setModalOpen(true);
   };
@@ -93,7 +136,7 @@ function AddTask(props) {
     router.refresh
     const obj = {
       addTodo: addTodo,
-      isCompleted:false
+      isCompleted:true
     };
     console.log(obj);
     
@@ -111,6 +154,10 @@ function AddTask(props) {
     setAddTodo("");
   };
 
+
+  const CompletedTaskHandler=()=>{
+    router.push("/completedtask")
+  }
   return (
     <>
       <main className="max-w-4xl mx-auto mt-4" style={{ marginTop: '80px' }}>
@@ -170,8 +217,8 @@ function AddTask(props) {
             >
               <input
                 type="checkbox"
-                checked={todo.completed}
-                onChange={(event) => handleCheckboxChange(event, todo)}
+                checked={!todo.isCompleted}
+                onChange={() => handleCheckboxChange(todo._id)}
                 className="mr-2 mx-2 mt-3"
               />
               <span className="flex items-center mt-3 mx-4">
@@ -197,7 +244,11 @@ function AddTask(props) {
             </li>
           ))}
       </ul>
+
+     
     </div>
+    <button className="bg-pink-700 hover:bg-pink-600 text-white  py-2 px-4 rounded mt-8 ml-[700px] mr-[300px]" onClick={CompletedTaskHandler}>CompletedTask</button>
+    
    </>
   );
 }
